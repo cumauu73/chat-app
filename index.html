@@ -88,8 +88,8 @@
     <div class="box">
         <ul id="messages"></ul>
         <form id="form" action="">
-            <input id="name" placeholder="Your Name" autocomplete="off" />
-            <input id="input" placeholder="Message" autocomplete="off" /><button>Send</button>
+            <input id="name" placeholder="Your Name" autocomplete="off" required />
+            <input id="input" placeholder="Message" autocomplete="off" required /><button>Send</button>
         </form>
         <div id="error-message" style="color: red; display: none;">Please enter a name to chat.</div>
         
@@ -97,7 +97,7 @@
         
     </div>
 
-
+    
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
