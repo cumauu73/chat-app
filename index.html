@@ -91,6 +91,8 @@
             <input id="name" placeholder="Your Name" autocomplete="off" />
             <input id="input" placeholder="Message" autocomplete="off" /><button>Send</button>
         </form>
+        <div id="error-message" style="color: red; display: none;">Please enter a name to chat.</div>
+        
         
         
     </div>
@@ -100,21 +102,32 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
-
 var messages = document.getElementById('messages');
 var form = document.getElementById('form');
 var input = document.getElementById('input');
 var nameInput = document.getElementById('name');
+var errorMessage = document.getElementById('error-message'); 
 
 // Check if the user's name is already in local storage
 var storedName = localStorage.getItem('chatName');
 if (storedName) {
     nameInput.value = storedName;
+    nameInput.style.display = 'none'; // Hide the name input field
 }
 
 form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (input.value && nameInput.value) {
+    
+    // Validate that the name field is not empty
+    if (nameInput.value.trim() === '') {
+        errorMessage.style.display = 'block'; 
+        return; 
+    }
+
+    // Hide the error message if the name is not empty
+    errorMessage.style.display = 'none';
+
+    if (input.value) {
         socket.emit('chat message', { name: nameInput.value, message: input.value });
         input.value = '';
     }
@@ -124,11 +137,10 @@ socket.on('chat message', function (data) {
     var item = document.createElement('li');
     item.textContent = data.name + ': ' + data.message;
 
-    // Assign a color class based on whether the message sender is the current user
     if (data.name === nameInput.value) {
-        item.classList.add('pink-bg'); // Your message is pink
+        item.classList.add('pink-bg');
     } else {
-        item.classList.add('blue-bg'); // Other users' messages are blue
+        item.classList.add('blue-bg');
     }
 
     messages.appendChild(item);
@@ -137,6 +149,8 @@ socket.on('chat message', function (data) {
     // Save the user's name in local storage
     localStorage.setItem('chatName', nameInput.value);
 });
+
+
 
 
 
