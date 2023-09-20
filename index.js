@@ -12,14 +12,16 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
+  socket.on('chat message', (data) => { // Receive both name and message
+    console.log('message from ' + data.name + ': ' + data.message);
+    io.emit('chat message', data); // Broadcast the name and message to all clients
   });
 });
+
 
 server.listen(PORT, () => {
   console.log(`Now listening @ http://localhost:${PORT}`);
 });
+
 
 

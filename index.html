@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Socket.IO chat</title>
+    <title>Cuma Chat</title>
     <style>
         body {
             margin: 0;
@@ -11,7 +11,7 @@
         }
 
         #form {
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(245, 18, 162, 0.627);
             padding: 0.25rem;
             position: fixed;
             bottom: 0;
@@ -44,53 +44,106 @@
             outline: none;
             color: #fff;
         }
+        /* Define the colors you want to use */
+/* Pink color */
+.pink-bg {
+    background: #FF1493;
+}
+
+/* Blue color */
+.blue-bg {
+    background: #0000FF;
+}
+
+
 
         #messages {
             list-style-type: none;
             margin: 0;
             padding: 0;
+            
+            margin-top: 2px;
+            
         }
 
         #messages>li {
-            padding: 0.5rem 1rem;
+            padding: 0.2rem 0.7rem;
+            margin-left: 0.5rem;
+            margin-top: 3px;
+            display: flex;
+            border:1px rgba(0, 0, 0, 0.76) solid;
+            border-radius: 16px;
         }
 
-        #messages>li:nth-child(odd) {
-            background: #efefef;
+       
+        .box {
+            display: flex;
         }
     </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-        <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
+
+    <div class="box">
+        <ul id="messages"></ul>
+        <form id="form" action="">
+            <input id="name" placeholder="Your Name" autocomplete="off" />
+            <input id="input" placeholder="Message" autocomplete="off" /><button>Send</button>
+        </form>
+        
+        
+    </div>
+
 
 
     <script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
+    <script>
+      var socket = io();
 
-  var messages = document.getElementById('messages');
-  var form = document.getElementById('form');
-  var input = document.getElementById('input');
+var messages = document.getElementById('messages');
+var form = document.getElementById('form');
+var input = document.getElementById('input');
+var nameInput = document.getElementById('name');
 
-  form.addEventListener('submit', function(e) {
+// Check if the user's name is already in local storage
+var storedName = localStorage.getItem('chatName');
+if (storedName) {
+    nameInput.value = storedName;
+}
+
+form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (input.value) {
-      socket.emit('chat message', input.value);
-      input.value = '';
+    if (input.value && nameInput.value) {
+        socket.emit('chat message', { name: nameInput.value, message: input.value });
+        input.value = '';
     }
-  });
+});
 
-  socket.on('chat message', function(msg) {
+socket.on('chat message', function (data) {
     var item = document.createElement('li');
-    item.textContent = msg;
+    item.textContent = data.name + ': ' + data.message;
+
+    // Assign a color class based on whether the message sender is the current user
+    if (data.name === nameInput.value) {
+        item.classList.add('pink-bg'); // Your message is pink
+    } else {
+        item.classList.add('blue-bg'); // Other users' messages are blue
+    }
+
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
-  });
-</script>
+
+    // Save the user's name in local storage
+    localStorage.setItem('chatName', nameInput.value);
+});
+
+
+
+
+
+
+    </script>
 
 </body>
 
